@@ -5,9 +5,14 @@ module.exports = {
     entry: {
         index: './src/index.js',
     },
+    devtool: 'inline-source-map',
+    devServer: {
+        contentBase: './dist',
+    },
     plugins: [
         new HtmlWebpackPlugin({
-            title: 'Output Management',
+            title: 'Akash Melachuri',
+            template: './src/index.html'
         }),
     ],
     mode: 'development',
