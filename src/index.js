@@ -13,17 +13,27 @@ const controls = new OrbitControls(camera, canvas);
 controls.target.set(0, 0, 0);
 controls.update();
 
-const geometry = new THREE.BoxGeometry();
-const material = new THREE.MeshBasicMaterial( { color: 0x00ff00 } );
-const cube = new THREE.Mesh( geometry, material );
-scene.add( cube );
+var geometry = new THREE.BufferGeometry();
+const vertices = new Float32Array( [
+  -1.0, -1.0,  0.0,
+	 1.0, -1.0,  0.0,
+	 1.0,  1.0,  0.0,
 
-camera.position.z = 5;
+	 1.0,  1.0,  0.0,
+	-1.0,  1.0,  0.0,
+	-1.0, -1.0,  0.0	] );
+
+geometry.setAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+const material = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+const mesh = new THREE.Mesh( geometry, material );
+
+scene.add( mesh );
+
+camera.position.z = 1;
 
 function animate() {
     requestAnimationFrame(animate);
-    cube.rotation.x += 0.005;
-    cube.rotation.y += 0.005;
+
     renderer.render(scene, camera);
 }
 animate();
