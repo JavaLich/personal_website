@@ -20,8 +20,6 @@ module.exports = {
         filename: '[name].bundle.js',
         path: path.resolve(__dirname, 'dist'),
         clean: true,
-        library: "threejs",
-        libraryTarget: "umd" 
     },
     module: {
         rules: [
