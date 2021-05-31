@@ -15,9 +15,11 @@
             varying vec2 vUv;
 
             uniform sampler2D density;
+            uniform bool click;
 
             void main() {
                 gl_FragColor = texture2D(density, vUv);
+                gl_FragColor = vec4(vUv, 0.0, 1.0);
             }
         </script>
     </head>
@@ -25,7 +27,7 @@
         <div id="container">
             <canvas id="c"></canvas>
             <div id="content"> 
-                <h1 style="color:Black;transform: translate(-50%, -50%);">
+                <h1 style="color:White;transform: translate(-50%, -50%);">
                     Akash Melachuri
                 </h1>
             </div>
