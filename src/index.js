@@ -1,5 +1,16 @@
 import * as THREE from 'three';
 import './style.css';
+import { createDataTexture } from './helper.js'
+
+var click = false;
+
+function handleResize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+
+    init();
+}
+window.addEventListener('resize', handleResize);
 
 function init() {
     scene = new THREE.Scene();
@@ -16,6 +27,10 @@ function init() {
         }
     });
     mesh = new THREE.Mesh(geometry, material);
+
+    renderer.setSize(width, height);
+
+    scene.add(mesh);
 }
 
 var width = window.innerWidth;
@@ -25,60 +40,16 @@ var scale = 8;
 var scene;
 var camera;
 
-var data = new Uint8Array(width * height * 4);
+var density = createDataTexture(width, height);
 
-var click = false;
-
-for (let i = 0; i < width * height * 4; i += 4) {
-    data[i] = 0;
-    data[i + 1] = 0;
-    data[i + 2] = 0;
-    data[i + 3] = 255;
-}
-
-data = new Uint8Array(data);
-
-var density = new THREE.DataTexture(data, width, height, THREE.RGBAFormat);
-density.needsUpdates = true;
-
-init();
+var geometry;
+var material;
+var mesh;
 
 const canvas = document.querySelector('#c');
 const renderer = new THREE.WebGLRenderer({canvas});
-renderer.setSize(width, height);
 
-var geometry = new THREE.PlaneGeometry(width, height, 1, 1);
-var material = new THREE.ShaderMaterial({
-    vertexShader: document.getElementById('vertex').textContent,
-	fragmentShader: document.getElementById('fragment').textContent,
-    uniforms: {
-        click: {value: click},
-        density: {value: density }
-    }
-});
-var mesh = new THREE.Mesh(geometry, material);
-scene.add(mesh);
-
-function handleResize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-
-    init();
-
-    renderer.setSize(width, height);
-    scene.add(mesh);
-}
-window.addEventListener('resize', handleResize);
-
-function mouseClick() {
-    click = true;
-}
-window.addEventListener('mousedown', mouseClick);
-
-function mouseRelease() {
-    click = false;
-}
-window.addEventListener('mouseup', mouseRelease);
+init();
 
 function animate() {
     requestAnimationFrame(animate);
