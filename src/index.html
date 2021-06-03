@@ -18,8 +18,10 @@
             uniform bool click;
 
             void main() {
-                gl_FragColor = texture2D(density, vUv);
-                gl_FragColor = vec4(vUv, 0.0, 1.0);
+                if (click)
+                    gl_FragColor = vec4(vUv, 0.0, 1.0);
+                else
+                    gl_FragColor = texture2D(density, vUv);
             }
         </script>
     </head>

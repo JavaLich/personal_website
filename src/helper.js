@@ -5,7 +5,7 @@ export function createDataTexture(width, height) {
     
     for (let i = 0; i < width * height * 4; i += 4) {
         data[i] = 0;
-        data[i + 1] = 0;
+        data[i + 1] = 255;
         data[i + 2] = 0;
         data[i + 3] = 255;
     }
@@ -18,12 +18,3 @@ export function createDataTexture(width, height) {
     return tex;
 }
 
-function mouseClick() {
-    click = true;
-}
-window.addEventListener('mousedown', mouseClick);
-
-function mouseRelease() {
-    click = false;
-}
-window.addEventListener('mouseup', mouseRelease);
