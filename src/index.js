@@ -35,20 +35,19 @@ function init() {
     	fragmentShader: document.getElementById('fragment').textContent,
         uniforms: {
             click: {value: click},
-            density: {value: density }
+            density: {value: densityTarget1.texture }
         }
     });
     mesh = new THREE.Mesh(geometry, material);
 
     bufferScene.add(mesh);
 
-    var box = new THREE.PlaneGeometry(100, 100);
+    var box = new THREE.PlaneGeometry(width, height);
     const box_material = new THREE.MeshBasicMaterial( {
-        map: densityTarget.texture,
+        map: densityTarget2.texture,
     } );
 
-    var box_mesh = new THREE.Mesh(box, box_material);
-    box_mesh.material.needsUpdate = true;
+    box_mesh = new THREE.Mesh(box, box_material);
     scene.add(box_mesh);
 }
 
@@ -57,11 +56,13 @@ var height = window.innerHeight;
 var scale = 8;
 
 var scene;
-var bufferScene;
 var camera;
 
-var density = createDataTexture(width, height);
-var densityTarget = new THREE.WebGLRenderTarget(width, height);
+var bufferScene;
+var box_mesh;
+
+var densityTarget1 = new THREE.WebGLRenderTarget(width, height);
+var densityTarget2 = new THREE.WebGLRenderTarget(width, height);
 
 var geometry;
 var material;
@@ -77,8 +78,15 @@ function animate() {
 
     mesh.material.uniforms.click.value = click;
 
-    renderer.setRenderTarget(densityTarget)
+    renderer.setRenderTarget(densityTarget2)
     renderer.render(bufferScene, camera);
+
+    var t = densityTarget1;
+    densityTarget1 = densityTarget2;
+    densityTarget2 = t;
+
+    box_mesh.material.map = densityTarget2.texture;
+    material.uniforms.density.value = densityTarget1.texture;
 
     renderer.setRenderTarget(null)
     renderer.render(scene, camera);
