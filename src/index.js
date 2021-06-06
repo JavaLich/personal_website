@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import './style.css';
-import { createDataTexture } from './helper.js'
+import * as Helper from './helper.js'
 
 var click = false;
 
@@ -35,7 +35,7 @@ function init() {
     	fragmentShader: document.getElementById('fragment').textContent,
         uniforms: {
             click: {value: click},
-            density: {value: densityTarget1.texture }
+            density: {value: density.targetA.texture }
         }
     });
     mesh = new THREE.Mesh(geometry, material);
@@ -44,7 +44,7 @@ function init() {
 
     var box = new THREE.PlaneGeometry(width, height);
     const box_material = new THREE.MeshBasicMaterial( {
-        map: densityTarget2.texture,
+        map: density.targetB.texture,
     } );
 
     box_mesh = new THREE.Mesh(box, box_material);
@@ -61,8 +61,7 @@ var camera;
 var bufferScene;
 var box_mesh;
 
-var densityTarget1 = new THREE.WebGLRenderTarget(width, height);
-var densityTarget2 = new THREE.WebGLRenderTarget(width, height);
+var density = new Helper.FramebufferFeedback(width, height);
 
 var geometry;
 var material;
@@ -78,15 +77,13 @@ function animate() {
 
     mesh.material.uniforms.click.value = click;
 
-    renderer.setRenderTarget(densityTarget2)
+    renderer.setRenderTarget(density.targetB)
     renderer.render(bufferScene, camera);
 
-    var t = densityTarget1;
-    densityTarget1 = densityTarget2;
-    densityTarget2 = t;
+    density.swap();
 
-    box_mesh.material.map = densityTarget2.texture;
-    material.uniforms.density.value = densityTarget1.texture;
+    box_mesh.material.map = density.targetB.texture;
+    material.uniforms.density.value = density.targetA.texture;
 
     renderer.setRenderTarget(null)
     renderer.render(scene, camera);
