@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import './style.css';
-import * as Helper from './helper.js'
+import * as Simulation from './simulation.js'
 
 function mousePress() {
     density.material.uniforms.click.value = true;
@@ -11,6 +11,7 @@ function mouseRelease() {
     density.material.uniforms.click.value = false;
 }
 window.addEventListener('mouseup', mouseRelease);
+
 function handleResize() {
     width = window.innerWidth;
     height = window.innerHeight;
@@ -37,7 +38,6 @@ function init() {
 
 var width = window.innerWidth;
 var height = window.innerHeight;
-var scale = 8;
 
 var scene;
 var camera;
@@ -45,7 +45,7 @@ var camera;
 var bufferScene;
 var box_mesh;
 
-var density = new Helper.FramebufferFeedback(width, height);
+var density = new Simulation.FramebufferFeedback(width, height);
 
 var geometry;
 var material;
@@ -60,7 +60,6 @@ function animate() {
     requestAnimationFrame(animate);
 
     density.update(renderer, camera);
-
     box_mesh.material.map = density.target.texture;
 
     renderer.setRenderTarget(null)
