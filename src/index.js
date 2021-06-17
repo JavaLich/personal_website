@@ -27,6 +27,9 @@ function init() {
 
     renderer.setSize(width, height);
 
+    density = new Simulation.FramebufferFeedback(width, height);
+    velocity = new Simulation.FramebufferFeedback(width, height);
+
     var box = new THREE.PlaneGeometry(width, height);
     const box_material = new THREE.MeshBasicMaterial( {
         map: density.temp.texture,
@@ -45,7 +48,8 @@ var camera;
 var bufferScene;
 var box_mesh;
 
-var density = new Simulation.FramebufferFeedback(width, height);
+var density;
+var velocity;
 
 var geometry;
 var material;
@@ -60,6 +64,7 @@ function animate() {
     requestAnimationFrame(animate);
 
     density.update(renderer, camera);
+    velocity.advect(renderer, camera, density, velocity);
     box_mesh.material.map = density.target.texture;
 
     renderer.setRenderTarget(null)

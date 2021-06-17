@@ -21,6 +21,17 @@
                 gl_FragColor = min(texture2D(density, vUv) + vec4(0.005), vec4(1.0));
             }
         </script>
+        <script id="advection" type="x-shader/x-fragment">
+            varying vec2 vUv;
+
+            uniform bool click;
+            uniform sampler2D density;
+            uniform sampler2D velocity;
+
+            void main() {
+                gl_FragColor = vec4(1.0, texture2D(density, vUv).r, 1.0, 1.0);
+            }
+        </script>
     </head>
     <body>
         <div id="container">
