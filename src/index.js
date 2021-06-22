@@ -3,12 +3,12 @@ import './style.css';
 import * as Simulation from './simulation.js'
 
 function mousePress() {
-    density.material.uniforms.click.value = true;
+    velocity.advectMesh.material.uniforms.click.value = true;
 }
 window.addEventListener('mousedown', mousePress);
 
 function mouseRelease() {
-    density.material.uniforms.click.value = false;
+    velocity.advectMesh.material.uniforms.click.value = false;
 }
 window.addEventListener('mouseup', mouseRelease);
 
@@ -30,13 +30,18 @@ function init() {
     density = new Simulation.FramebufferFeedback(width, height);
     velocity = new Simulation.FramebufferFeedback(width, height);
 
-    var box = new THREE.PlaneGeometry(width, height);
+    var box = new THREE.PlaneGeometry(width - 1, height - 1);
     const box_material = new THREE.MeshBasicMaterial( {
-        map: density.temp.texture,
+        map: density.target.texture,
     } );
 
     box_mesh = new THREE.Mesh(box, box_material);
+
+    var edges = new THREE.EdgesGeometry(box);
+    var line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xff0000 } ));
+
     scene.add(box_mesh);
+    scene.add(line);
 }
 
 var width = window.innerWidth;
@@ -63,8 +68,8 @@ init();
 function animate() {
     requestAnimationFrame(animate);
 
-    density.update(renderer, camera);
-    velocity.advect(renderer, camera, density, velocity);
+    // density.update(renderer, camera);
+    velocity.advect(renderer, camera, velocity, density);
     box_mesh.material.map = density.target.texture;
 
     renderer.setRenderTarget(null)

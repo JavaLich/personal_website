@@ -8,6 +8,8 @@ export class FramebufferFeedback {
         this.target = new THREE.WebGLRenderTarget(width, height);
         this.temp = new THREE.WebGLRenderTarget(width, height);
 
+        window.click = false;
+
         this.scene = new THREE.Scene();
         this.geometry = new THREE.PlaneGeometry(width, height);
         this.material = new THREE.ShaderMaterial({
@@ -27,7 +29,7 @@ export class FramebufferFeedback {
     	    fragmentShader: document.getElementById('advection').textContent,
             uniforms: {
                 click: {value: false},
-                density: {value: this.temp.texture},
+                source: {value: this.temp.texture},
                 velocity: {value: this.temp.texture}
             }
         });
@@ -35,25 +37,28 @@ export class FramebufferFeedback {
         this.advectionScene.add(this.advectMesh);
     }
 
-    advect(renderer, camera, density, velocity) {
-        this.advectMesh.material.uniforms.density.value = density.temp.texture;
-        this.advectMesh.material.uniforms.velocity.value = velocity.temp.texture;
-        renderer.setRenderTarget(velocity.target)
+    static toggleClick() {
+        window.click = !window.click;
+    }
+
+    advect(renderer, camera, velocity, source) {
+        this.advectMesh.material.uniforms.source.value = source.target.texture;
+        this.advectMesh.material.uniforms.velocity.value = velocity.target.texture;
+        this.advectMesh.material.uniforms.click.value = window.click;
+        // console.log(window.click);
+        renderer.setRenderTarget(source.temp)
         renderer.render(this.advectionScene, camera);
 
-        velocity.swap();
-
-        velocity.advectMat.uniforms.velocity.value = velocity.temp.texture;
+        source.swap();
     }
 
     update(renderer, camera) {
-        this.mesh.material.uniforms.density.value = this.temp.texture;
-        renderer.setRenderTarget(this.target)
+        this.mesh.material.uniforms.density.value = this.target.texture;
+        this.mesh.material.uniforms.click.value = window.click;
+        renderer.setRenderTarget(this.temp)
         renderer.render(this.scene, camera);
 
         this.swap();
-
-        this.material.uniforms.density.value = this.temp.texture;
     }
 
     swap() {
