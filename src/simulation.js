@@ -20,35 +20,23 @@ export class FramebufferFeedback {
         });
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.scene.add(this.mesh);
-
-        this.advectionScene = new THREE.Scene();
-        this.advectMat = new THREE.ShaderMaterial({
-            vertexShader: document.getElementById('vertex').textContent,
-    	    fragmentShader: document.getElementById('advection').textContent,
-            uniforms: {
-                click: {value: false},
-                source: {value: this.temp.texture},
-                velocity: {value: this.temp.texture},
-                size: {value: new THREE.Vector2()}
-            }
-        });
-        this.advectMesh = new THREE.Mesh(this.geometry, this.advectMat);
-        this.advectionScene.add(this.advectMesh);
     }
 
     advect(renderer, camera, velocity, source) {
-        this.advectMesh.material.uniforms.source.value = source.target.texture;
-        this.advectMesh.material.uniforms.velocity.value = velocity.target.texture;
-        this.advectMesh.material.uniforms.click.value = window.click;
-        this.advectMesh.material.uniforms.size.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
+        this.mesh.material.fragmentShader = document.getElementById('advection').textContent;
+        this.mesh.material.uniforms.source = { value: source.target.texture };
+        this.mesh.material.uniforms.velocity = { value: velocity.target.texture };
+        this.mesh.material.uniforms.click = { value: window.click };
+        this.mesh.material.uniforms.size = { value: new THREE.Vector2(window.innerWidth, window.innerHeight) };
 
         renderer.setRenderTarget(source.temp)
-        renderer.render(this.advectionScene, camera);
+        renderer.render(this.scene, camera);
 
         source.swap();
     }
 
     update(renderer, camera) {
+        this.mesh.material.fragmentShader = document.getElementById('fragment').textContent;
         this.mesh.material.uniforms.density.value = this.target.texture;
         this.mesh.material.uniforms.click.value = window.click;
 
