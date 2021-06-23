@@ -70,6 +70,7 @@ function animate() {
 
     // density.update(renderer, camera);
     velocity.advect(renderer, camera, velocity, density);
+    velocity.advect(renderer, camera, velocity, velocity);
     box_mesh.material.map = density.target.texture;
 
     renderer.setRenderTarget(null)

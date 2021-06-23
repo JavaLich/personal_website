@@ -8,8 +8,6 @@ export class FramebufferFeedback {
         this.target = new THREE.WebGLRenderTarget(width, height);
         this.temp = new THREE.WebGLRenderTarget(width, height);
 
-        window.click = false;
-
         this.scene = new THREE.Scene();
         this.geometry = new THREE.PlaneGeometry(width, height);
         this.material = new THREE.ShaderMaterial({
@@ -30,22 +28,20 @@ export class FramebufferFeedback {
             uniforms: {
                 click: {value: false},
                 source: {value: this.temp.texture},
-                velocity: {value: this.temp.texture}
+                velocity: {value: this.temp.texture},
+                size: {value: new THREE.Vector2()}
             }
         });
         this.advectMesh = new THREE.Mesh(this.geometry, this.advectMat);
         this.advectionScene.add(this.advectMesh);
     }
 
-    static toggleClick() {
-        window.click = !window.click;
-    }
-
     advect(renderer, camera, velocity, source) {
         this.advectMesh.material.uniforms.source.value = source.target.texture;
         this.advectMesh.material.uniforms.velocity.value = velocity.target.texture;
         this.advectMesh.material.uniforms.click.value = window.click;
-        // console.log(window.click);
+        this.advectMesh.material.uniforms.size.value = new THREE.Vector2(window.innerWidth, window.innerHeight);
+
         renderer.setRenderTarget(source.temp)
         renderer.render(this.advectionScene, camera);
 
@@ -55,6 +51,7 @@ export class FramebufferFeedback {
     update(renderer, camera) {
         this.mesh.material.uniforms.density.value = this.target.texture;
         this.mesh.material.uniforms.click.value = window.click;
+
         renderer.setRenderTarget(this.temp)
         renderer.render(this.scene, camera);
 

@@ -18,7 +18,7 @@
             uniform bool click;
 
             void main() {
-                gl_FragColor = min(texture2D(density, vUv) + vec4(0.005), vec4(1.0));
+                gl_FragColor = vec4(floor(2. * sin(vUv)), 0, 1);
             }
         </script>
         <script id="advection" type="x-shader/x-fragment">
@@ -27,9 +27,28 @@
             uniform bool click;
             uniform sampler2D source;
             uniform sampler2D velocity;
+            uniform vec2 size;
+            
+            vec4 bilerp(in vec2 coords, in sampler2D qty)
+            {
+              vec4 st;
+              st.xy = (floor(coords * size - 0.5) + 0.5) / size; 
+              st.zw = st.xy + 1.0 / size; 
+             
+              vec4 t11 = texture2D(qty, st.xy);
+              vec4 t21 = texture2D(qty, st.zy);
+              vec4 t12 = texture2D(qty, st.xw);
+              vec4 t22 = texture2D(qty, st.zw);
+              
+              vec2 factor = (coords - st.xy) * size; 
+
+              return mix(mix(t11, t21, factor.x), mix(t12, t22, factor.x), factor.y);
+            }
 
             void main() {
-                gl_FragColor = texture2D(source, vUv) + min(vec4(0.03, 0.02, 0.01, 1.0), vec4(1.0));
+                vec2 pos = vUv - texture2D(velocity, vUv).xy;
+                gl_FragColor = bilerp(vUv, source);
+                // gl_FragColor = texture2D(source, vUv);
             }
         </script>
     </head>
