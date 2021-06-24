@@ -1,4 +1,4 @@
-import * as THREE from 'three';
+import * as Three from 'three';
 import './style.css';
 import * as Simulation from './simulation.js'
 
@@ -21,8 +21,8 @@ function handleResize() {
 window.addEventListener('resize', handleResize);
 
 function init() {
-    scene = new THREE.Scene();
-    camera = new THREE.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000);
+    scene = new Three.Scene();
+    camera = new Three.OrthographicCamera(width / - 2, width / 2, height / 2, height / - 2, 1, 1000);
     camera.position.z = 1;
 
     renderer.setSize(width, height);
@@ -30,15 +30,15 @@ function init() {
     density = new Simulation.FramebufferFeedback(width, height);
     velocity = new Simulation.FramebufferFeedback(width, height);
 
-    var box = new THREE.PlaneGeometry(width - 1, height - 1);
-    const box_material = new THREE.MeshBasicMaterial( {
+    var box = new Three.PlaneGeometry(width - 1, height - 1);
+    const box_material = new Three.MeshBasicMaterial( {
         map: density.target.texture,
     } );
 
-    box_mesh = new THREE.Mesh(box, box_material);
+    box_mesh = new Three.Mesh(box, box_material);
 
-    var edges = new THREE.EdgesGeometry(box);
-    var line = new THREE.LineSegments(edges, new THREE.LineBasicMaterial( { color: 0xff0000 } ));
+    var edges = new Three.EdgesGeometry(box);
+    var line = new Three.LineSegments(edges, new Three.LineBasicMaterial( { color: 0xff0000 } ));
 
     scene.add(box_mesh);
     scene.add(line);
@@ -61,16 +61,18 @@ var material;
 var mesh;
 
 const canvas = document.querySelector('#c');
-const renderer = new THREE.WebGLRenderer({canvas});
+const renderer = new Three.WebGLRenderer({canvas});
 
 init();
+
+density.update(renderer, camera);
 
 function animate() {
     requestAnimationFrame(animate);
 
-    // density.update(renderer, camera);
-    velocity.advect(renderer, camera, velocity, density);
-    velocity.advect(renderer, camera, velocity, velocity);
+    velocity.advect(renderer, camera, velocity);
+    density.advect(renderer, camera, velocity);
+
     box_mesh.material.map = density.target.texture;
 
     renderer.setRenderTarget(null)

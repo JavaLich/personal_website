@@ -19,6 +19,7 @@
 
             void main() {
                 gl_FragColor = vec4(floor(2. * sin(vUv)), 0, 1);
+                // gl_FragColor = texture2D(density, vUv) + vec4(0.01);
             }
         </script>
         <script id="advection" type="x-shader/x-fragment">
@@ -29,26 +30,21 @@
             uniform sampler2D velocity;
             uniform vec2 size;
             
-            vec4 bilerp(in vec2 coords, in sampler2D qty)
-            {
-              vec4 st;
-              st.xy = (floor(coords * size - 0.5) + 0.5) / size; 
-              st.zw = st.xy + 1.0 / size; 
-             
-              vec4 t11 = texture2D(qty, st.xy);
-              vec4 t21 = texture2D(qty, st.zy);
-              vec4 t12 = texture2D(qty, st.xw);
-              vec4 t22 = texture2D(qty, st.zw);
-              
-              vec2 factor = (coords - st.xy) * size; 
+            vec4 bilerp (sampler2D sam, vec2 uv, vec2 tsize) {
+                vec2 st = uv / tsize - 0.5;
+                vec2 iuv = floor(st);
+                vec2 fuv = fract(st);
+                vec4 a = texture2D(sam, (iuv + vec2(0.5, 0.5)) * tsize);
+                vec4 b = texture2D(sam, (iuv + vec2(1.5, 0.5)) * tsize);
+                vec4 c = texture2D(sam, (iuv + vec2(0.5, 1.5)) * tsize);
+                vec4 d = texture2D(sam, (iuv + vec2(1.5, 1.5)) * tsize);
 
-              return mix(mix(t11, t21, factor.x), mix(t12, t22, factor.x), factor.y);
+                return mix(mix(a, b, fuv.x), mix(c, d, fuv.x), fuv.y);
             }
 
             void main() {
                 vec2 pos = vUv - texture2D(velocity, vUv).xy;
-                gl_FragColor = bilerp(vUv, source);
-                // gl_FragColor = texture2D(source, vUv);
+                gl_FragColor = bilerp(source, pos, size);
             }
         </script>
     </head>
