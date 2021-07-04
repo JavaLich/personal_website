@@ -16,7 +16,8 @@ export class FramebufferFeedback {
                 alpha: { value: 0.0 },
                 rBeta: { value: 0.0 },
                 x: { value: this.temp.texture },
-                b: { value: this.temp.texture }
+                b: { value: this.temp.texture },
+                size: {value: new Three.Vector2(window.innerWidth, window.innerHeight)}
             }
         });
 
@@ -39,7 +40,8 @@ export class FramebufferFeedback {
     	    fragmentShader: document.getElementById('fragment').textContent,
             uniforms: {
                 click: {value: false},
-                density: {value: this.temp.texture}
+                density: {value: this.temp.texture},
+                factor: {value: 1.0}
             }
         });
 
@@ -64,8 +66,9 @@ export class FramebufferFeedback {
 
         this.diffuseMesh.material.uniforms.alpha.value = alpha;
         this.diffuseMesh.material.uniforms.rBeta.value = rBeta;
-        this.diffuseMesh.material.uniforms.x.value = velocity.texture;
-        this.diffuseMesh.material.uniforms.b.value = velocity.texture;
+        this.diffuseMesh.material.uniforms.x.value = velocity.target.texture;
+        this.diffuseMesh.material.uniforms.b.value = this.target.texture;
+        this.diffuseMesh.material.uniforms.size.value = new Three.Vector2(window.innerWidth, window.innerHeight);
 
         renderer.setRenderTarget(this.temp);
         renderer.render(this.diffuseScene, camera);
@@ -85,9 +88,10 @@ export class FramebufferFeedback {
         this.swap();
     }
 
-    update(renderer, camera) {
+    update(renderer, camera, factor) {
         this.mesh.material.uniforms.density.value = this.target.texture;
         this.mesh.material.uniforms.click.value = false;
+        this.mesh.material.uniforms.factor.value = factor;
 
         renderer.setRenderTarget(this.temp)
         renderer.render(this.scene, camera);

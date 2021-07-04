@@ -65,8 +65,8 @@ const renderer = new Three.WebGLRenderer({canvas});
 
 init();
 
-density.update(renderer, camera);
-velocity.update(renderer, camera);
+velocity.update(renderer, camera, 1.0 / 20.0);
+density.update(renderer, camera, 1.0);
 
 function animate() {
     requestAnimationFrame(animate);

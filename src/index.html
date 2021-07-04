@@ -15,10 +15,11 @@
             varying vec2 vUv;
 
             uniform sampler2D density;
+            uniform float factor;
             uniform bool click;
 
             void main() {
-                gl_FragColor = vec4(floor(2. * sin(vUv)), 0, 1);
+                gl_FragColor = vec4(vUv * factor, 0, 1);
                 // gl_FragColor = texture2D(density, vUv) + vec4(0.01);
             }
         </script>
@@ -58,11 +59,13 @@
             uniform sampler2D x;
             uniform sampler2D b;
 
+            uniform vec2 size;
+
             void main() {
-                vec4 xL = texture2D(x, vUv - vec2(1, 0));
-                vec4 xR = texture2D(x, vUv + vec2(1, 0));
-                vec4 xB = texture2D(x, vUv - vec2(0, 1));
-                vec4 xT = texture2D(x, vUv + vec2(0, 1));
+                vec4 xL = texture2D(x, vUv - vec2(1. / size.x, 0));
+                vec4 xR = texture2D(x, vUv + vec2(1. / size.x, 0));
+                vec4 xB = texture2D(x, vUv - vec2(0, 1. / size.y));
+                vec4 xT = texture2D(x, vUv + vec2(0, 1. / size.y));
 
                 vec4 bC = texture2D(b, vUv);
 
