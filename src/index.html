@@ -43,8 +43,30 @@
             }
 
             void main() {
-                vec2 pos = vUv - texture2D(velocity, vUv).xy;
+                float rdx = 1.0;
+                float dt = 1.0;
+                vec2 pos = vUv - rdx * dt * texture2D(velocity, vUv).xy;
                 gl_FragColor = bilerp(source, pos, size);
+            }
+        </script>
+        <script id="diffusion" type="x-shader/x-fragment">
+            varying vec2 vUv;
+
+            uniform float alpha;
+            uniform float rBeta;
+
+            uniform sampler2D x;
+            uniform sampler2D b;
+
+            void main() {
+                vec4 xL = texture2D(x, vUv - vec2(1, 0));
+                vec4 xR = texture2D(x, vUv + vec2(1, 0));
+                vec4 xB = texture2D(x, vUv - vec2(0, 1));
+                vec4 xT = texture2D(x, vUv + vec2(0, 1));
+
+                vec4 bC = texture2D(b, vUv);
+
+                gl_FragColor = (xL + xR + xB + xT + alpha + bC) * rBeta;
             }
         </script>
     </head>

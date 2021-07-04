@@ -8,6 +8,19 @@ export class FramebufferFeedback {
         this.target = new Three.WebGLRenderTarget(width, height);
         this.temp = new Three.WebGLRenderTarget(width, height);
 
+        this.diffuseScene = new Three.Scene();
+        this.diffuseMat = new Three.ShaderMaterial({
+            vertexShader: document.getElementById('vertex').textContent,
+    	    fragmentShader: document.getElementById('diffusion').textContent,
+            uniforms: {
+                alpha: { value: 0.0 },
+                rBeta: { value: 0.0 },
+                x: { value: this.temp.texture },
+                b: { value: this.temp.texture }
+            }
+        });
+
+
         this.advectScene = new Three.Scene();
         this.advectMat = new Three.ShaderMaterial({
             vertexShader: document.getElementById('vertex').textContent,
@@ -21,7 +34,6 @@ export class FramebufferFeedback {
         });
 
         this.scene = new Three.Scene();
-        this.geometry = new Three.PlaneGeometry(width, height);
         this.material = new Three.ShaderMaterial({
             vertexShader: document.getElementById('vertex').textContent,
     	    fragmentShader: document.getElementById('fragment').textContent,
@@ -31,15 +43,37 @@ export class FramebufferFeedback {
             }
         });
 
+        this.geometry = new Three.PlaneGeometry(width, height);
+
         this.mesh = new Three.Mesh(this.geometry, this.material);
         this.scene.add(this.mesh);
+
+        this.diffuseMesh = new Three.Mesh(this.geometry, this.diffuseMat);
+        this.diffuseScene.add(this.diffuseMesh)
 
         this.advectMesh = new Three.Mesh(this.geometry, this.advectMat);
         this.advectScene.add(this.advectMesh);
     }
 
+    diffuse(renderer, camera, velocity) {
+        var dt = 1.0;
+        var dx = 1.0;
+        var n = window.innerHeight;
+        var alpha = (dx * dx) / (n * dt);
+        var rBeta = 1 / (4 + alpha);
+
+        this.diffuseMesh.material.uniforms.alpha.value = alpha;
+        this.diffuseMesh.material.uniforms.rBeta.value = rBeta;
+        this.diffuseMesh.material.uniforms.x.value = velocity.texture;
+        this.diffuseMesh.material.uniforms.b.value = velocity.texture;
+
+        renderer.setRenderTarget(this.temp);
+        renderer.render(this.diffuseScene, camera);
+
+        this.swap();
+    }
+
     advect(renderer, camera, velocity) {
-        this.advectMesh.material.fragmentShader = document.getElementById('advection').textContent;
         this.advectMesh.material.uniforms.source.value = this.target.texture;
         this.advectMesh.material.uniforms.velocity.value = velocity.target.texture;
         this.advectMesh.material.uniforms.click.value = false;
@@ -52,7 +86,6 @@ export class FramebufferFeedback {
     }
 
     update(renderer, camera) {
-        this.mesh.material.fragmentShader = document.getElementById('fragment').textContent;
         this.mesh.material.uniforms.density.value = this.target.texture;
         this.mesh.material.uniforms.click.value = false;
 
