@@ -13,10 +13,10 @@ export class FramebufferFeedback {
             vertexShader: document.getElementById('vertex').textContent,
     	    fragmentShader: document.getElementById('advection').textContent,
             uniforms: {
-                source: { value: this.temp.texture },
-                velocity: { value: this.temp.texture },
-                click: { value: false },
-                size: { value: new Three.Vector2() }
+                source: {},
+                velocity: {},
+                click: {},
+                size: {}
             }
         });
 
@@ -26,8 +26,8 @@ export class FramebufferFeedback {
             vertexShader: document.getElementById('vertex').textContent,
     	    fragmentShader: document.getElementById('fragment').textContent,
             uniforms: {
-                click: {value: false},
-                density: {value: this.temp.texture}
+                click: {},
+                density: {}
             }
         });
 

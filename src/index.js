@@ -50,15 +50,10 @@ var height = window.innerHeight;
 var scene;
 var camera;
 
-var bufferScene;
 var box_mesh;
 
 var density;
 var velocity;
-
-var geometry;
-var material;
-var mesh;
 
 const canvas = document.querySelector('#c');
 const renderer = new Three.WebGLRenderer({canvas});
