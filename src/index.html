@@ -15,17 +15,15 @@
             varying vec2 vUv;
 
             uniform sampler2D density;
-            uniform bool click;
+            uniform float factor;
 
             void main() {
-                gl_FragColor = vec4(floor(2. * sin(vUv)), 0, 1);
-                // gl_FragColor = texture2D(density, vUv) + vec4(0.01);
+                gl_FragColor = vec4(vUv * factor, 0, 1);
             }
         </script>
         <script id="advection" type="x-shader/x-fragment">
             varying vec2 vUv;
 
-            uniform bool click;
             uniform sampler2D source;
             uniform sampler2D velocity;
             uniform vec2 size;
@@ -43,8 +41,41 @@
             }
 
             void main() {
-                vec2 pos = vUv - texture2D(velocity, vUv).xy;
+                float rdx = 1.0;
+                float dt = 1.0;
+                vec2 pos = vUv - rdx * dt * texture2D(velocity, vUv).xy;
                 gl_FragColor = bilerp(source, pos, size);
+            } </script>
+        <script id="diffusion" type="x-shader/x-fragment">
+            varying vec2 vUv;
+
+            uniform float alpha;
+            uniform float rBeta;
+
+            uniform sampler2D x;
+            uniform sampler2D b;
+
+            uniform vec2 size;
+
+            void main() {
+                vec4 xL = texture2D(x, vUv - vec2(1. / size.x, 0));
+                vec4 xR = texture2D(x, vUv + vec2(1. / size.x, 0));
+                vec4 xB = texture2D(x, vUv - vec2(0, 1. / size.y));
+                vec4 xT = texture2D(x, vUv + vec2(0, 1. / size.y));
+
+                vec4 bC = texture2D(b, vUv);
+
+                gl_FragColor = (xL + xR + xB + xT + alpha * bC) * rBeta;
+            }
+        </script>
+        <script id="splat" type="x-shader/x-fragment">
+            varying vec2 vUv;
+
+            uniform sampler2D source;
+            uniform vec2 mousePos;
+
+            void main() {
+                gl_FragColor = vec4(0.01 / distance(mousePos, vUv), 0.0, 0.0, 1.0) + texture2D(source, vUv);
             }
         </script>
     </head>

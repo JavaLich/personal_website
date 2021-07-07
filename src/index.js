@@ -3,12 +3,12 @@ import './style.css';
 import * as Simulation from './simulation.js'
 
 function mousePress() {
-    velocity.advectMesh.material.uniforms.click.value = true;
+    window.click = true;
 }
 window.addEventListener('mousedown', mousePress);
 
 function mouseRelease() {
-    velocity.advectMesh.material.uniforms.click.value = false;
+    window.click = false;
 }
 window.addEventListener('mouseup', mouseRelease);
 
@@ -60,13 +60,20 @@ const renderer = new Three.WebGLRenderer({canvas});
 
 init();
 
-density.update(renderer, camera);
+velocity.update(renderer, camera, 1.0 / 10.0);
 
 function animate() {
     requestAnimationFrame(animate);
 
     velocity.advect(renderer, camera, velocity);
     density.advect(renderer, camera, velocity);
+
+    if (window.click) 
+        density.splat(renderer, camera);
+
+    for (var i = 0; i < 10; i++) {
+        velocity.diffuse(renderer, camera, velocity);
+    }
 
     box_mesh.material.map = density.target.texture;
 
