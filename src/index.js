@@ -60,8 +60,8 @@ const renderer = new Three.WebGLRenderer({canvas});
 
 init();
 
-velocity.update(renderer, camera, 1.0 / 10.0);
-density.update(renderer, camera, 1.0);
+//velocity.update(renderer, camera, 1.0 / 10.0);
+//density.update(renderer, camera, 1.0);
 
 function animate() {
     requestAnimationFrame(animate);
@@ -69,13 +69,12 @@ function animate() {
     velocity.advect(renderer, camera, velocity);
     density.advect(renderer, camera, velocity);
 
-    for (var i = 0; i < 5; i++) {
-        velocity.diffuse(renderer, camera, velocity);
-        density.diffuse(renderer, camera, velocity);
-    }
-
     if (window.click) 
         density.splat(renderer, camera);
+
+    for (var i = 0; i < 10; i++) {
+        velocity.diffuse(renderer, camera, velocity);
+    }
 
     box_mesh.material.map = density.target.texture;
 
