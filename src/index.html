@@ -75,7 +75,6 @@
             uniform vec2 mousePos;
 
             void main() {
-                // mousePos.y = -mousePos.y;
                 gl_FragColor = vec4(0.01 / distance(mousePos, vUv), 0.0, 0.0, 1.0) + texture2D(source, vUv);
             }
         </script>
