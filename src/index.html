@@ -16,17 +16,14 @@
 
             uniform sampler2D density;
             uniform float factor;
-            uniform bool click;
 
             void main() {
                 gl_FragColor = vec4(vUv * factor, 0, 1);
-                // gl_FragColor = texture2D(density, vUv) + vec4(0.01);
             }
         </script>
         <script id="advection" type="x-shader/x-fragment">
             varying vec2 vUv;
 
-            uniform bool click;
             uniform sampler2D source;
             uniform sampler2D velocity;
             uniform vec2 size;
@@ -48,8 +45,7 @@
                 float dt = 1.0;
                 vec2 pos = vUv - rdx * dt * texture2D(velocity, vUv).xy;
                 gl_FragColor = bilerp(source, pos, size);
-            }
-        </script>
+            } </script>
         <script id="diffusion" type="x-shader/x-fragment">
             varying vec2 vUv;
 
@@ -69,7 +65,18 @@
 
                 vec4 bC = texture2D(b, vUv);
 
-                gl_FragColor = (xL + xR + xB + xT + alpha + bC) * rBeta;
+                gl_FragColor = (xL + xR + xB + xT + alpha * bC) * rBeta;
+            }
+        </script>
+        <script id="splat" type="x-shader/x-fragment">
+            varying vec2 vUv;
+
+            uniform sampler2D source;
+            uniform vec2 mousePos;
+
+            void main() {
+                // mousePos.y = -mousePos.y;
+                gl_FragColor = vec4(0.01 / distance(mousePos, vUv), 0.0, 0.0, 1.0) + texture2D(source, vUv);
             }
         </script>
     </head>
