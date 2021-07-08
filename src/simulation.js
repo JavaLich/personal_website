@@ -37,7 +37,6 @@ export class FramebufferFeedback {
                 alpha: { value: 1.0 },
                 rBeta: { value: 1.0 },
                 x: { value: this.temp.texture },
-                b: { value: this.temp.texture },
                 size: {value: new Three.Vector2(window.innerWidth, window.innerHeight)}
             }
         });
@@ -98,7 +97,6 @@ export class FramebufferFeedback {
         this.diffuseMesh.material.uniforms.alpha.value = alpha;
         this.diffuseMesh.material.uniforms.rBeta.value = rBeta;
         this.diffuseMesh.material.uniforms.x.value = velocity.target.texture;
-        this.diffuseMesh.material.uniforms.b.value = this.target.texture;
         this.diffuseMesh.material.uniforms.size.value = new Three.Vector2(window.innerWidth, window.innerHeight);
 
         renderer.setRenderTarget(this.temp);
